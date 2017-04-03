@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>女性安全期月曆</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <link href="./bootstrap/bootstrap.css" rel="stylesheet">
+    <link rel='stylesheet' href="style/style.css"/>
+    <script src="js/jquery.js"></script>
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <link href="http://fonts.googleapis.com/css?family=Carrois+Gothic" rel="stylesheet">
+    <link rel="stylesheet" href="dzstooltip/dzstooltip.css"/>
+    <link rel="stylesheet" href="dzscalendar/dzscalendar.css"/>
+    <script src="dzscalendar/dzscalendar.js"></script>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+</head>
+<body>
+<div class="mwrap-wrapper">
+  <section class="mcon-mainmenu" style="position: absolute; z-index: 5;">
+    <div class="container">
+        <div class="row">
+            <div class="main-menu-con">
+                <ul class="main-menu">
+                    <li class=" active"><a href="index.html">首頁</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="mcon-maindemo" style="position: relative; padding-top:80px;">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 ">
+                <div class="the-bg"></div>
+                <form id="menstr-form" action="/result" method="POST">
+                    <div class="form-group">
+                        <label for="avg-menstr">請選擇生理期週期：</label>
+                        <select class="form-control" id="avg-menstr" name="avg-menstr">
+                            <?php
+                                $arr = range(27, 40);
+                                foreach ($arr as $value) {
+                                    echo '<option>'.$value.'</option>';
+                                }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="start-menstr-date">請選擇生理期開始日:</label>
+                        <input class="form-control" id="start-menstr-date" name="start-menstr-date" type="date">
+                    </div>
+                    <button type="submit" class="btn btn-success">送出</button>
+                </form>
+                <script>
+                    $(function() {
+                        $('#tr4').dzscalendar({
+                            header_weekdayStyle: 'default',
+                            start_weekday: '星期一',
+                            date_format: 'n-j-Y'
+                        });
+                    });
+                </script>
+                <div class="dzscalendar-con  skin-responsive-galileo" style="max-width: 960px; margin: 25px auto;">
+                    <div id="dzcalendar-option" class="dzscalendar skin-responsive-galileo auto-init" style="background: #fff;" data-options="">
+                        <div id="eventsList" class="events">
+                            <?php
+                                if(isset($eventList)) {
+                                    foreach ($eventList as $key => $value) {
+                                        if ($key === 'safe') {
+                                            $color = 'blue';
+                                            $message = '安全期';
+                                        } else if ($key === 'danger') {
+                                            $color = 'red';
+                                            $message = '危險期';
+                                        } else {
+                                            $color = 'important';
+                                            $message = '月經期';
+                                        }
+                                        foreach ($value as $theDat) {
+                                            echo '<div class="event-tobe" data-tag="'.$color.'" data-date="'.$theDat.'">
+                                                <span class="tooltip-heading">名稱</span>'.$message.'</div>';
+                                        }
+                                    }
+                                }
+                            ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="mcon-footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                &copy; copyright <a href="https://github.com/peter279k">peter279k</a> 2017
+            </div>
+        </div>
+    </div>
+</section>
+</div>
+<script>
+    window.arr_monthnames = [ "一月", "二月", "三月", "四月", "五月", "六月", "七月",
+        "八月", "九月", "十月", "十一月", "十二月" ];
+    $(function() {
+        var design_month_covers = [
+            'apod-images/2017-02-07.jpg', 'apod-images/2017-02-08.jpg', 'apod-images/2017-02-09.jpg',
+            'apod-images/2017-02-10.jpg', 'apod-images/2017-02-11.jpg', 'apod-images/2017-02-12.jpg',
+            'apod-images/2017-02-13.jpg', 'apod-images/2017-02-14.jpg', 'apod-images/2017-02-15.jpg',
+            'apod-images/2017-02-16.jpg', 'apod-images/2017-02-17.jpg', 'apod-images/2017-02-18.jpg'
+        ];
+        var dat = new Date();
+        dzscal_init("#tr1", {});
+        dzscal_init("#tr2", {
+            start_month: dat.getMonth() + 1,
+            start_year: dat.getFullYear(),
+            start_weekday: '星期一'
+        });
+        dzscal_init("#tr3", {
+            design_transitionDesc: 'slide'
+        });
+        dzscal_init("#traurora", {
+            design_transitionDesc: 'tooltipDef'
+            ,design_transition: 'fade'
+        });
+        dzscal_init("#trauroradatepicker", {
+            design_transitionDesc: 'tooltipDef'
+            ,mode:'datepicker'
+            ,header_weekdayStyle: 'three'
+            ,design_transition: 'fade'
+        });
+
+        function dp1_event(arg) {
+            //console.log(arg);
+            $('.event-receiver').html('clicked day: ' + arg);
+        }
+
+        var dp1 = document.getElementById('trauroradatepicker');
+        if (dp1) {
+
+            dp1.arr_datepicker_events.push(dp1_event);
+        }
+
+        dzscal_init("#trresponsive", {
+            header_weekdayStyle: 'three',
+            design_transition: 'none'
+        });
+
+        dzscal_init("#cal-responsive-galileo2", {
+            design_month_covers : design_month_covers
+        });
+    });
+</script>
+
+<link rel="stylesheet" href="fontawesome/font-awesome.min.css"/>/>
+<link rel='stylesheet' type="text/css" href="zoombox/zoombox.css"/>
+<script src="zoombox/zoombox.js"></script>
+</body>
+</html>
